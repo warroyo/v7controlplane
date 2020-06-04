@@ -1,0 +1,28 @@
+apiVersion: run.tanzu.vmware.com/v1alpha1
+kind: TanzuKubernetesCluster
+metadata:
+  name: tkc1 
+  namespace: poc
+spec:
+  distribution:
+    version: v1.16.8                           #The full image name is specified
+  topology:
+    controlPlane:
+      count: 1                                 #3 control plane nodes
+      class: best-effort-medium                  #large size VM
+      storageClass: pacific-gold-storage-policy  #Specific storage class for control plane
+    workers:
+      count: 3                                 #5 worker nodes
+      class: best-effort-medium                 #extra large size VM
+      storageClass: pacific-gold-storage-policy   #Specific storage class for workers
+  settings:
+    network:
+      cni:
+        name: calico
+      services:
+        cidrBlocks: ["198.51.100.0/12"]     #Cannot overlap with Supervisor Cluster
+      pods:
+        cidrBlocks: ["192.0.2.0/16"]        #Cannot overlap with Supervisor Cluster
+    storage:
+      classes: ["pacific-gold-storage-policy"]           #Named PVC storage classes
+      defaultClass: pacific-gold-storage-policy                  #Default PVC storage class

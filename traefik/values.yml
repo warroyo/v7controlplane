@@ -1,0 +1,50 @@
+# Default values for Traefik
+image:
+  name: traefik
+  tag: 2.2.1
+
+#
+# Configure the deployment
+#
+deployment:
+  enabled: true
+  # Number of pods of the deployment
+  replicas: 2
+  # Additional deployment annotations (e.g. for jaeger-operator sidecar injection)
+  annotations: {}
+  # Additional pod annotations (e.g. for mesh injection or prometheus scraping)
+  podAnnotations: {}
+
+# Create an IngressRoute for the dashboard
+ingressRoute:
+  dashboard:
+    enabled: true
+    # Additional ingressRoute annotations (e.g. for kubernetes.io/ingress.class)
+    annotations: {}
+    # Additional ingressRoute labels (e.g. for filtering IngressRoute by custom labels)
+    labels: {}
+
+rollingUpdate:
+  maxUnavailable: 1
+  maxSurge: 1
+
+
+
+# Options for the main traefik service, where the entrypoints traffic comes
+# from.
+service:
+  enabled: true
+  type: LoadBalancer
+  # Additional annotations (e.g. for cloud provider specific config)
+  annotations: {}
+  # Additional entries here will be added to the service spec. Cannot contains
+  # type, selector or ports entries.
+  spec: {}
+    # externalTrafficPolicy: Cluster
+    # loadBalancerIP: "1.2.3.4"
+    # clusterIP: "2.3.4.5"
+  loadBalancerSourceRanges: []
+    # - 192.168.0.1/32
+    # - 172.16.0.0/16
+  externalIPs: []
+    # - 1.2.3.4

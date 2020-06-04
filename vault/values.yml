@@ -1,0 +1,15 @@
+server:
+
+  service:
+    enabled: true
+  ingress:
+    enabled: true
+    hosts: 
+    - host: vault.apps.haas-436.pez.pivotal.io
+
+  ha:
+    enabled: true
+    replicas: 3
+ui:
+  enabled: true
+

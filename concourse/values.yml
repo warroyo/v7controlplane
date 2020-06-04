@@ -1,0 +1,218 @@
+
+
+## Configuration values for the Concourse application (worker and web components).
+## The values specified here are almost direct references to the flags under the
+## `concourse web` and `concourse worker` commands.
+##
+concourse:
+  ## Configurations for the `web` component based on the possible flags configurable
+  ## through the `concourse web` command.
+  ##
+  web:
+    
+    ## TLS configuration for the web component to be able to serve HTTPS traffic.
+    ## Once enabled, consumes the certificates set via secrets (`web-tls-cert` and
+    ## `web-tls-key`).
+    ##
+    tls:
+
+      ## Enable serving HTTPS traffic directly through the web component.
+      ##
+      enabled: false
+
+      ## Port on which to listen for HTTPS traffic.
+      ##
+      bindPort: 443
+
+    ## URL used to reach any ATC from the outside world.
+    ## This is *very* important for a proper authentication workflow as
+    ## browser redirects are based on the value set here.
+    ##
+    ## Example: http://ci.concourse-ci.org
+    ##
+    externalUrl: http://concourse.apps.haas-436.pez.pivotal.io
+
+   
+
+    ## Configuration for using Vault as a credential manager.
+    ## Ref: https://concourse-ci.org/creds.html#vault
+    ##
+    vault:
+      ## Enable the use of Vault as a credential manager.
+      ##
+      enabled: true
+
+      ## URL pointing to vault addr (i.e. http://vault:8200).
+      ##
+      url: vault-active.ops.svc.cluster.local
+
+      ## Vault namespace to use for authentication and secret lookup.
+      ##
+      namespace:
+
+      ## Vault path under which to namespace credentials lookup.
+      ##
+      pathPrefix: /concourse
+
+      ## Path under which to lookup shared credentials.
+      ##
+      sharedPath:
+
+      ## Path templates to use for credential lookup.
+      ##
+      ## Example: ["/{{.Team}}/{{.Pipeline}}/{{.Secret}}", "/{{.Team}}/{{.Secret}}"]
+      lookupTemplates: []
+
+      ## if the Vault server is using a self-signed certificate, set this to true,
+      ## and provide a value for the cert in secrets (field `vault-ca-cert`).
+      ##
+      useCaCert: false
+
+      ## Vault authentication backend, leave this blank if using an initial periodic token.
+      ## Currently supported backends: token, approle, cert.
+      ##
+      authBackend: ""
+
+      ## Path to a directory of PEMEncoded CA cert files to verify the vault server SSL cert.
+      ##
+      caPath:
+
+      ## If set, is used to set the SNI host when connecting via TLS.
+      ##
+      serverName:
+
+      ## Enable insecure SSL verification.
+      ##
+      insecureSkipVerify: false
+
+      ## Client token for accessing secrets within the Vault server.
+      ##
+      clientToken:
+
+      ## Time after which to force a reLogin. If not set, the token will just be continuously renewed.
+      ##
+      authBackendMaxTtl:
+
+      ## The maximum time between retries when logging in or reAuthing a secret.
+      ##
+      retryMax: 5m
+
+      ## The initial time between retries when logging in or reAuthing a secret.
+      ##
+      retryInitial: 1s
+
+    
+    
+
+  
+web:
+
+  ## Enable or disable the web component.
+  ## This allows the creation of worker-only releases by setting this to false.
+  ##
+  enabled: true
+
+
+  ## Number of replicas.
+  ##
+  replicas: 1
+
+
+  service:
+    api:
+      ## For minikube, set this to ClusterIP, elsewhere use LoadBalancer or NodePort
+      ## Ref: https://kubernetes.io/docs/user-guide/services/#publishing-services---service-types
+      ##
+      type: ClusterIP
+
+
+
+
+  ## Ingress configuration.
+  ## Ref: https://kubernetes.io/docs/user-guide/ingress/
+  ##
+  ingress:
+    ## Enable Ingress.
+    ##
+    enabled: true
+
+    ## Annotations to be added to the web ingress.
+    ## Example:
+    ##   kubernetes.io/ingress.class: nginx
+    ##   kubernetes.io/tls-acme: 'true'
+    ##
+    annotations: {}
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enabled.
+    ## Example:
+    ##   - concourse.domain.com
+    ##
+    hosts:
+      - concourse.apps.haas-436.pez.pivotal.io
+
+    ## TLS configuration.
+    ## Secrets must be manually created in the namespace.
+    ## Example:
+    ##   - secretName: concourse-web-tls
+    ##     hosts:
+    ##       - concourse.domain.com
+    ##
+    tls:
+
+## Configuration values for Concourse Worker components.
+## For more information regarding the characteristics of
+## Concourse Workers, see https://concourse-ci.org/concourse-worker.html
+##
+worker:
+
+  ## Enable or disable the worker component.
+  ## This can allow users to create web only releases by setting this to false
+  ##
+  enabled: true
+
+
+  ## Number of replicas.
+  ##
+  replicas: 2
+
+  
+
+secrets:
+  ## Create the secret resource from the following values. Set this to
+  ## false to manage these secrets outside Helm.
+  ##
+  create: true
+
+  
+  ## Secrets for using Hashcorp Vault as a credential manager.
+  ##
+  ## if the Vault server is using a self-signed certificate, provide the CA public key.
+  ## the value will be written to /concourse-vault/ca.cert
+  ##
+  vaultCaCert:
+
+  ## initial periodic token issued for concourse
+  ## Ref: https://www.vaultproject.io/docs/concepts/tokens.html#periodic-tokens
+  ##
+  vaultClientToken:
+
+  ## vault authentication parameters
+  ## Parameter to pass when logging in via the backend
+  ## Required for "approle" authenication method
+  ## e.g. "role_id:x,secret_id:x"
+  ## Ref: https://concourse-ci.org/vault-credential-manager.html#vault-approle-auth
+  ##
+  vaultAuthParam:
+
+  ## provide the client certificate for authenticating with the [TLS](https://www.vaultproject.io/docs/auth/cert.html) backend
+  ## the value will be written to /concourse-vault/client.cert
+  ## make sure to also set credentialManager.vault.authBackend to `cert`
+  ##
+  vaultClientCert:
+
+  ## provide the client key for authenticating with the [TLS](https://www.vaultproject.io/docs/auth/cert.html) backend
+  ## the value will be written to /concourse-vault/client.key
+  ## make sure to also set credentialManager.vault.authBackend to `cert`
+  ##
+  vaultClientKey:
