@@ -31,9 +31,14 @@ concourse:
     ## Example: http://ci.concourse-ci.org
     ##
     externalUrl: http://concourse.apps.haas-436.pez.pivotal.io
-
+    localAuth:
+      enabled: true 
+    auth:
+      mainTeam:
+        localUser: "test"
    
-
+    kubernetes:
+      enabled: false
     ## Configuration for using Vault as a credential manager.
     ## Ref: https://concourse-ci.org/creds.html#vault
     ##
@@ -44,11 +49,7 @@ concourse:
 
       ## URL pointing to vault addr (i.e. http://vault:8200).
       ##
-      url: vault-active.ops.svc.cluster.local
-
-      ## Vault namespace to use for authentication and secret lookup.
-      ##
-      namespace:
+      url: http://vault-active.ops.svc.cluster.local:8200
 
       ## Vault path under which to namespace credentials lookup.
       ##
@@ -71,7 +72,7 @@ concourse:
       ## Vault authentication backend, leave this blank if using an initial periodic token.
       ## Currently supported backends: token, approle, cert.
       ##
-      authBackend: ""
+      authBackend: "approle"
 
       ## Path to a directory of PEMEncoded CA cert files to verify the vault server SSL cert.
       ##
@@ -203,7 +204,7 @@ secrets:
   ## e.g. "role_id:x,secret_id:x"
   ## Ref: https://concourse-ci.org/vault-credential-manager.html#vault-approle-auth
   ##
-  vaultAuthParam:
+  vaultAuthParam: "role_id:xxxxxxxx,secret_id:xxxxxxxxxx"
 
   ## provide the client certificate for authenticating with the [TLS](https://www.vaultproject.io/docs/auth/cert.html) backend
   ## the value will be written to /concourse-vault/client.cert

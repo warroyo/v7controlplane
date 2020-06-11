@@ -1,5 +1,7 @@
-server:
+global:
+  tlsDisable: true
 
+server:
   service:
     enabled: true
   ingress:
